@@ -57,6 +57,10 @@
       "eas": {
         "projectId": "3efa073d-a874-437c-bc07-53dd837cae5b"
       }
+    },
+    "packagerOpts": {
+      "sourceExts": ["js", "jsx", "svgx"],
+      "transformer": "node_modules/react-native-svg-transformer/index.js"
     }
   }
 }
