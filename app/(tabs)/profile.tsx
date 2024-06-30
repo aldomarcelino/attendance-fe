@@ -1,5 +1,7 @@
 import {
   StyleSheet,
+  Platform,
+  StatusBar,
   Image,
   SafeAreaView,
   View,
@@ -130,6 +132,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   heading: {
     width: "90%",

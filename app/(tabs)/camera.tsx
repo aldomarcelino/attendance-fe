@@ -1,16 +1,13 @@
-import { StyleSheet, Image, Platform, Text, Linking } from "react-native";
+import React, { useEffect } from "react";
+import { StyleSheet, Text, Linking, View, Pressable } from "react-native";
 
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import {
   Camera,
   useCameraDevice,
   useCameraPermission,
 } from "react-native-vision-camera";
-import { useEffect } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import CameraIcon from "@/assets/icon/camera-icon.svg";
 
 export default function TabTwoScreen() {
   const device = useCameraDevice("front");
@@ -34,10 +31,29 @@ export default function TabTwoScreen() {
   if (!hasPermission) return <Text>ikfasdjfsda jfasdan</Text>;
   if (device == null) return <Text>bebek gorengggg</Text>;
   return (
-    <>
-      <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} />
-      {/* <Text>Maukkkfjasldjfasd jfasldjfsd</Text> */}
-    </>
+    <View style={{ flex: 1, position: "relative" }}>
+      <Camera
+        style={StyleSheet.absoluteFill}
+        device={device}
+        isActive={false}
+      />
+      <Pressable
+        style={{
+          position: "absolute",
+          bottom: 50,
+          alignSelf: "center",
+        }}
+      >
+        <LinearGradient
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 0 }}
+          colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+          style={styles.btn}
+        >
+          <CameraIcon width={32} height={32} />
+        </LinearGradient>
+      </Pressable>
+    </View>
   );
 }
 
@@ -51,5 +67,12 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
+  },
+  btn: {
+    height: 64,
+    width: 64,
+    borderRadius: 32,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
