@@ -45,7 +45,7 @@ export default function HomeScreen() {
       }
       let { coords } = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = coords;
-      Geocoder.init(process.env.GOOGLE_API_KEY || "", {
+      Geocoder.init(process.env.EXPO_PUBLIC_GOOGLE_API_KEY || "", {
         language: "id",
       });
 

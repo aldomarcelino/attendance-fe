@@ -1,65 +1,97 @@
 import { Tabs } from "expo-router";
 import React from "react";
-
-import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
-              color={color}
-            />
+          title: "",
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.contain}>
+              {focused ? (
+                <MaterialCommunityIcons
+                  name="home-variant"
+                  size={24}
+                  color="#1F335B"
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="home-variant-outline"
+                  size={24}
+                  color="#79859D"
+                />
+              )}
+              <Text
+                style={{
+                  color: focused ? "#1F335B" : "#79859D",
+                  fontFamily: "Kodchasan",
+                }}
+              >
+                beranda
+              </Text>
+            </View>
           ),
         }}
       />
       <Tabs.Screen
         name="schedule"
         options={{
-          title: "Jadwal",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
-              color={color}
-            />
+          title: "",
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.contain}>
+              {focused ? (
+                <Ionicons name="calendar" size={24} color="#1F335B" />
+              ) : (
+                <Ionicons name="calendar-outline" size={24} color="#79859D" />
+              )}
+              <Text
+                style={{
+                  color: focused ? "#1F335B" : "#79859D",
+                  fontFamily: "Kodchasan",
+                }}
+              >
+                jadwal
+              </Text>
+            </View>
           ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
-              color={color}
-            />
+          title: "",
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.contain}>
+              {focused ? (
+                <Ionicons
+                  name="person-circle-sharp"
+                  size={26}
+                  color="#1F335B"
+                />
+              ) : (
+                <Ionicons
+                  name="person-circle-outline"
+                  size={26}
+                  color="#79859D"
+                />
+              )}
+              <Text
+                style={{
+                  color: focused ? "#1F335B" : "#79859D",
+                  fontFamily: "Kodchasan",
+                }}
+              >
+                beranda
+              </Text>
+            </View>
           ),
         }}
       />
@@ -67,3 +99,6 @@ export default function TabLayout() {
   );
 }
 
+const styles = StyleSheet.create({
+  contain: { justifyContent: "center", alignItems: "center", marginTop: 20 },
+});

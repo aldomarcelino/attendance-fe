@@ -52,12 +52,13 @@ export default function Login() {
         `${process.env.EXPO_PUBLIC_API_URL}/user/signin`,
         form
       );
-      if (response.data) {
+      if (response.status == 200) {
         setLocalStorage("access_token", response.data.access_token);
         setLoading(false);
         router.replace("(tabs)");
       }
     } catch (e: any) {
+      setLoading(false);
       setError(e.response.data.message);
     }
   };
@@ -152,7 +153,7 @@ export default function Login() {
                 colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
                 style={styles.btn}
               >
-                <Text style={styles.btnText}>Masuk Akun AttendEasy</Text>
+                <Text style={styles.btnText}>Masuk Akun SIPREMO</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
