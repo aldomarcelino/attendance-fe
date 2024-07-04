@@ -45,7 +45,7 @@ export default function HomeScreen() {
       }
       let { coords } = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = coords;
-      Geocoder.init("AIzaSyAjcX7iJNAuKDqFev69gZIh8i-gzaIwGP0", {
+      Geocoder.init(process.env.GOOGLE_API_KEY || "", {
         language: "id",
       });
 
@@ -100,7 +100,7 @@ export default function HomeScreen() {
               <View style={styles.containLocation}>
                 <LocationIcon width={20} height={20} />
                 <Text style={styles.address}>
-                  {location?.substring(0, 51).concat("...")}
+                  {location?.substring(0, 45).concat("...")}
                 </Text>
               </View>
               <View style={styles.line} />

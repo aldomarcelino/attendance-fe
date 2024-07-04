@@ -1,3 +1,4 @@
+import React from "react";
 import {
   StyleSheet,
   Platform,
@@ -7,7 +8,9 @@ import {
   View,
   Text,
   ScrollView,
+  Pressable,
 } from "react-native";
+import { removeLocalStorage } from "@/utils/AsyncStorage";
 import ArrowDown from "@/assets/icon/arrow-down-icon.svg";
 import GoldIcon from "@/assets/icon/user-status-icon.svg";
 import UserIcon from "@/assets/icon/profile.svg";
@@ -23,6 +26,7 @@ import { ExternalLink } from "@/components/ExternalLink";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { router } from "expo-router";
 
 export default function Profile() {
   return (
@@ -105,10 +109,16 @@ export default function Profile() {
             <Text style={styles.title}>Informasi Personal</Text>
           </View>
           <View style={styles.lineSecondary} />
-          <View style={styles.flexed}>
+          <Pressable
+            style={styles.flexed}
+            onPress={() => {
+              removeLocalStorage("access_token");
+              router.replace("/");
+            }}
+          >
             <LogoutIcon width={20} height={20} />
-            <Text style={styles.title}>Informasi Personal</Text>
-          </View>
+            <Text style={styles.title}>Logout</Text>
+          </Pressable>
         </View>
 
         <Text

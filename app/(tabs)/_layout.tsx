@@ -28,24 +28,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="schedule"
         options={{
-          title: "Profile",
+          title: "Jadwal",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "home" : "home-outline"}
+              name={focused ? "code-slash" : "code-slash-outline"}
               color={color}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="camera"
+        name="profile"
         options={{
-          title: "Camera",
+          title: "Profile",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
+              name={focused ? "home" : "home-outline"}
               color={color}
             />
           ),
@@ -66,3 +66,4 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+

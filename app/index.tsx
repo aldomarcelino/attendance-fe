@@ -13,6 +13,9 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Stack, router } from "expo-router";
+import axios from "axios";
+import { getLocalStorage, setLocalStorage } from "@/utils/AsyncStorage";
+import Loading from "./components/loading";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -21,10 +24,56 @@ export default function Login() {
   });
   const [borderNim, setBorderNim] = useState("#F5F4F1");
   const [borderPass, setBorderPass] = useState("#F5F4F1");
+  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({ nim: "", password: "" });
+  const [loading, setLoading] = useState(false);
+
+  const clearError = () => {
+    setErrors({ nim: "", password: "" });
+    setError("");
+  };
+
+  const handleLogin = async () => {
+    if (!form.nim) {
+      setErrors({ ...errors, nim: "NIM tidak boleh kosong" });
+      setBorderNim("#E7031E");
+      return;
+    }
+    if (!form.password) {
+      setErrors({ ...errors, password: "Password tidak boleh kosong" });
+      setBorderPass("#E7031E");
+      return;
+    }
+    clearError();
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}/user/signin`,
+        form
+      );
+      if (response.data) {
+        setLocalStorage("access_token", response.data.access_token);
+        setLoading(false);
+        router.replace("(tabs)");
+      }
+    } catch (e: any) {
+      setError(e.response.data.message);
+    }
+  };
+
+  getLocalStorage("access_token")
+    .then((v: any) => {
+      if (v) router.replace("(tabs)");
+    })
+    .catch((error) => {
+      console.error("Error retrieving item:", error);
+    });
 
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
+      {loading && <Loading />}
       <SafeAreaView
         style={{
           flex: 1,
@@ -38,7 +87,7 @@ export default function Login() {
             style={styles.headerImg}
             source={require("@/assets/logo/udinus-logo.png")}
           />
-          <Text style={styles.title}>AttendEasy</Text>
+          <Text style={styles.title}>SIPREMO</Text>
           <Text style={styles.subtitle}>
             Clock Your Attendance with just a tap!
           </Text>
@@ -55,7 +104,11 @@ export default function Login() {
               autoCapitalize="none"
               autoCorrect={false}
               clearButtonMode="while-editing"
-              onChangeText={(nim) => setForm({ ...form, nim })}
+              onChangeText={(nim) => {
+                setForm({ ...form, nim });
+                setBorderNim("#3E95CC");
+                clearError();
+              }}
               placeholder="NIM"
               placeholderTextColor="#1F335B99"
               style={{ ...styles.inputControl, borderColor: borderNim }}
@@ -63,11 +116,16 @@ export default function Login() {
               onFocus={() => setBorderNim("#3E95CC")}
               onBlur={() => setBorderNim("#F5F4F1")}
             />
+            {errors.nim && <Text style={styles.error}>{errors.nim}</Text>}
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
               clearButtonMode="while-editing"
-              onChangeText={(password) => setForm({ ...form, password })}
+              onChangeText={(password) => {
+                setForm({ ...form, password });
+                clearError();
+                setBorderPass("#3E95CC");
+              }}
               placeholder="Kata Sandi Anda"
               placeholderTextColor="#1F335B99"
               style={{ ...styles.inputControl, borderColor: borderPass }}
@@ -76,14 +134,18 @@ export default function Login() {
               onFocus={() => setBorderPass("#3E95CC")}
               onBlur={() => setBorderPass("#F5F4F1")}
             />
+            {errors.password && (
+              <Text style={styles.error}>{errors.password}</Text>
+            )}
 
             <Text style={styles.forgotText}>lupa kata sandi</Text>
 
-            <TouchableOpacity
-              onPress={() => {
-                router.replace("/");
-              }}
-            >
+            {error && (
+              <View style={{ alignSelf: "center", marginBottom: 8 }}>
+                <Text style={styles.generalError}>{error}</Text>
+              </View>
+            )}
+            <TouchableOpacity onPress={handleLogin}>
               <LinearGradient
                 start={{ x: 1, y: 0 }}
                 end={{ x: 0, y: 0 }}
@@ -180,5 +242,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     backgroundColor: "transparent",
     textAlign: "center",
+  },
+  error: {
+    fontFamily: "Opensans",
+    fontSize: 10,
+    color: "#E7031E",
+    marginTop: 4,
+  },
+  generalError: {
+    fontFamily: "Opensans",
+    fontSize: 12,
+    color: "#E7031E",
+    marginTop: 4,
   },
 });
