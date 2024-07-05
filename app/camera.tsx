@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, Linking, View, Pressable } from "react-native";
-
 import {
   Camera,
   useCameraDevice,
   useCameraPermission,
 } from "react-native-vision-camera";
+import { Stack, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import CameraIcon from "@/assets/icon/camera-icon.svg";
+import ArrowIcon from "@/assets/icon/arrow-left-icon-white.svg";
 
 export default function TabTwoScreen() {
   const device = useCameraDevice("front");
@@ -29,31 +30,48 @@ export default function TabTwoScreen() {
   }, []);
 
   if (!hasPermission) return <Text>ikfasdjfsda jfasdan</Text>;
-  if (device == null) return <Text>bebek gorengggg</Text>;
+  // if (device == null) return <Text>bebek gorengggg</Text>;
   return (
-    <View style={{ flex: 1, position: "relative" }}>
-      <Camera
-        style={StyleSheet.absoluteFill}
-        device={device}
-        isActive={false}
-      />
-      <Pressable
-        style={{
-          position: "absolute",
-          bottom: 50,
-          alignSelf: "center",
-        }}
-      >
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={{ flex: 1, position: "relative" }}>
         <LinearGradient
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 0 }}
           colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
-          style={styles.btn}
+          style={styles.head}
         >
-          <CameraIcon width={32} height={32} />
+          <View style={styles.wrapTitle}>
+            <Pressable style={styles.arrowIcon} onPress={() => router.back()}>
+              <ArrowIcon height={24} width={24} />
+            </Pressable>
+            <Text style={styles.title}>Kehadiran</Text>
+          </View>
         </LinearGradient>
-      </Pressable>
-    </View>
+        {/* <Camera
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive={false}
+        /> */}
+        <Pressable
+          style={{
+            position: "absolute",
+            bottom: 50,
+            alignSelf: "center",
+          }}
+          onPress={() => router.replace("success-face")}
+        >
+          <LinearGradient
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 0 }}
+            colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+            style={styles.btn}
+          >
+            <CameraIcon width={32} height={32} />
+          </LinearGradient>
+        </Pressable>
+      </View>
+    </>
   );
 }
 
@@ -74,5 +92,20 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     alignItems: "center",
     justifyContent: "center",
+  },
+  head: {
+    width: "100%",
+    height: 109,
+  },
+  wrapTitle: {
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    marginTop: 69,
+  },
+  title: { fontFamily: "KodchasanBold", fontSize: 18, color: "#fff" },
+  arrowIcon: {
+    position: "absolute",
+    left: "5%",
   },
 });

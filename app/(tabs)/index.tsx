@@ -32,9 +32,10 @@ import {
   SimpleLineIcons,
   Entypo,
   FontAwesome,
-  Ionicons,
   MaterialIcons,
 } from "@expo/vector-icons";
+import { MotiView } from "moti";
+import { Easing } from "react-native-reanimated";
 
 interface Matkul {
   name: string;
@@ -53,19 +54,18 @@ interface Matkul {
 }
 
 export default function HomeScreen() {
+  // const hours = new Date().getHours();
+  // const minute = new Date().getMinutes();
+  const hours = 7;
+  const minute = 57;
+  // Initialize State
   const [showMore, setSowMore] = useState(false);
   const [location, setLocation] = useState("Waiting...");
-  const [errorMsg, setErrorMsg] = useState("");
-  const [latlong, setLatlong] = useState("waiting....");
+  const [isAvailable, setIsAvailable] = useState(false);
+  const [, setErrorMsg] = useState("");
   const [data, setData] = useState<Matkul | undefined | string>(undefined);
-  const [isDone, setIsDone] = useState(false);
   const [, setError] = useState("");
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
 
   const handleGetSheculde = async () => {
     try {
@@ -79,12 +79,25 @@ export default function HomeScreen() {
           },
         }
       );
-      setIsDone(true);
-      if (data && data.matkul) setData(data.matkul);
-      else setData("finish");
+      if (data && data.matkul) {
+        const { matkul } = data;
+        setData(matkul);
+        setIsAvailable(handleIndicator(matkul.hours_start, matkul.hours_end));
+      } else setData("finish");
     } catch (e: any) {
       setError(e.response.data.message);
     }
+  };
+
+  const handleIndicator = (start: string, end: string) => {
+    const jdStart = start.split(":");
+    const jdEnd = end.split(":");
+
+    const startInMinute = +jdStart[0] * 60 + +jdStart[1];
+    const endInMinute = +jdEnd[0] * 60 + +jdEnd[1];
+    const nowInMinute = hours * 60 + minute;
+
+    return nowInMinute >= startInMinute && nowInMinute <= endInMinute;
   };
 
   // Asking Location
@@ -198,10 +211,41 @@ export default function HomeScreen() {
                         <Text style={styles.message}>
                           Jangan lewatkan presensimu hari ini!
                         </Text>
-                        <View style={styles.outter}>
-                          <View style={styles.inner} />
-                        </View>
+
+                        {isAvailable ? (
+                          <View style={styles.outter}>
+                            <View style={styles.inner}>
+                              <MotiView
+                                from={{ opacity: 0.5, scale: 1 }}
+                                animate={{ opacity: 0, scale: 4 }}
+                                transition={{
+                                  type: "timing",
+                                  duration: 2000,
+                                  easing: Easing.out(Easing.ease),
+                                  delay: 400,
+                                  loop: true,
+                                }}
+                                style={styles.motion}
+                              />
+                            </View>
+                          </View>
+                        ) : (
+                          <View
+                            style={{
+                              ...styles.outter,
+                              borderColor: "#79859D",
+                            }}
+                          >
+                            <View
+                              style={{
+                                ...styles.inner,
+                                backgroundColor: "#79859D",
+                              }}
+                            />
+                          </View>
+                        )}
                       </View>
+
                       <View style={styles.flexCenter}>
                         <BookIcon width={41} height={41} />
                         <View style={{ marginLeft: 3 }}>
@@ -213,19 +257,38 @@ export default function HomeScreen() {
                           </Text>
                         </View>
                       </View>
-                      <View style={styles.statusWrap}>
-                        <Text style={styles.statusText}>Available</Text>
-                      </View>
+
+                      {isAvailable ? (
+                        <View style={styles.statusWrap}>
+                          <Text style={styles.statusText}>Available</Text>
+                        </View>
+                      ) : (
+                        <View
+                          style={{
+                            ...styles.statusWrap,
+                            backgroundColor: "#79859D",
+                            borderColor: "#black",
+                          }}
+                        >
+                          <Text
+                            style={{ ...styles.statusText, color: "white" }}
+                          >
+                            Unavailable
+                          </Text>
+                        </View>
+                      )}
 
                       <TouchableOpacity
-                        onPress={() => {
-                          // handle onPress
-                        }}
+                        onPress={() => isAvailable && router.push("camera")}
                       >
                         <LinearGradient
                           start={{ x: 1, y: 0 }}
                           end={{ x: 0, y: 0 }}
-                          colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+                          colors={
+                            isAvailable
+                              ? ["#3A9DD1", "#408EC7", "#3C70B7"]
+                              : ["#939db0", "#6c778d", "#545d6d"]
+                          }
                           style={styles.btn}
                         >
                           <CameraIcon width={17} height={17} />
@@ -835,4 +898,5 @@ const styles = StyleSheet.create({
     width: 9,
     borderRadius: 9,
   },
+  motion: { backgroundColor: "#3A9DD1", height: 9, width: 9, borderRadius: 9 },
 });

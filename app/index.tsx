@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -16,6 +17,7 @@ import { Stack, router } from "expo-router";
 import axios from "axios";
 import { getLocalStorage, setLocalStorage } from "@/utils/AsyncStorage";
 import Loading from "./components/loading";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -27,6 +29,9 @@ export default function Login() {
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({ nim: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+
+  console.log(process.env.EXPO_PUBLIC_API_URL, "<<<");
 
   const clearError = () => {
     setErrors({ nim: "", password: "" });
@@ -49,7 +54,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/user/signin`,
+        `http:127.0.0.1:3000/user/signin`,
         form
       );
       if (response.status == 200) {
@@ -59,17 +64,22 @@ export default function Login() {
       }
     } catch (e: any) {
       setLoading(false);
-      setError(e.response.data.message);
+      setError(e.response && e.response.data.message);
     }
   };
 
-  getLocalStorage("access_token")
-    .then((v: any) => {
-      if (v) router.replace("(tabs)");
-    })
-    .catch((error) => {
-      console.error("Error retrieving item:", error);
-    });
+  useEffect(() => {
+    const getSorage = async () => {
+      try {
+        const token = await getLocalStorage("access_token");
+        if (token) router.replace("(tabs)");
+      } catch (error) {
+        console.error("Error retrieving item:", error);
+      }
+    };
+
+    getSorage();
+  }, []);
 
   return (
     <>
@@ -118,23 +128,44 @@ export default function Login() {
               onBlur={() => setBorderNim("#F5F4F1")}
             />
             {errors.nim && <Text style={styles.error}>{errors.nim}</Text>}
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              clearButtonMode="while-editing"
-              onChangeText={(password) => {
-                setForm({ ...form, password });
-                clearError();
-                setBorderPass("#3E95CC");
-              }}
-              placeholder="Kata Sandi Anda"
-              placeholderTextColor="#1F335B99"
-              style={{ ...styles.inputControl, borderColor: borderPass }}
-              secureTextEntry={true}
-              value={form.password}
-              onFocus={() => setBorderPass("#3E95CC")}
-              onBlur={() => setBorderPass("#F5F4F1")}
-            />
+            <View style={{ position: "relative" }}>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+                onChangeText={(password) => {
+                  setForm({ ...form, password });
+                  clearError();
+                  setBorderPass("#3E95CC");
+                }}
+                placeholder="Kata Sandi Anda"
+                placeholderTextColor="#1F335B99"
+                style={{ ...styles.inputControl, borderColor: borderPass }}
+                secureTextEntry={!showPass}
+                value={form.password}
+                onFocus={() => setBorderPass("#3E95CC")}
+                onBlur={() => setBorderPass("#F5F4F1")}
+              />
+              <Pressable
+                style={{
+                  position: "absolute",
+                  top: 32,
+                  right: 16,
+                }}
+                onPress={() => setShowPass(!showPass)}
+              >
+                {showPass ? (
+                  <Ionicons name="eye-outline" size={24} color="#1F335B99" />
+                ) : (
+                  <Ionicons
+                    name="eye-off-outline"
+                    size={24}
+                    color="#1F335B99"
+                  />
+                )}
+              </Pressable>
+            </View>
+
             {errors.password && (
               <Text style={styles.error}>{errors.password}</Text>
             )}
