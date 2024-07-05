@@ -45,7 +45,7 @@ const ScheduleScreen = () => {
   // const hours = new Date().getHours();
   // const minute = new Date().getMinutes();
 
-  const today = 4;
+  const today = 5;
   const hours = 7;
   const minute = 30;
   const [, setError] = useState("");

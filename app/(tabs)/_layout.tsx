@@ -20,7 +20,7 @@ export default function TabLayout() {
                 <MaterialCommunityIcons
                   name="home-variant"
                   size={24}
-                  color="#1F335B"
+                  color="#3E95CC"
                 />
               ) : (
                 <MaterialCommunityIcons
@@ -33,6 +33,7 @@ export default function TabLayout() {
                 style={{
                   color: focused ? "#1F335B" : "#79859D",
                   fontFamily: "Kodchasan",
+                  fontSize: focused ? 14 : 13,
                 }}
               >
                 beranda
@@ -48,7 +49,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <View style={styles.contain}>
               {focused ? (
-                <Ionicons name="calendar" size={24} color="#1F335B" />
+                <Ionicons name="calendar" size={24} color="#3E95CC" />
               ) : (
                 <Ionicons name="calendar-outline" size={24} color="#79859D" />
               )}
@@ -56,6 +57,7 @@ export default function TabLayout() {
                 style={{
                   color: focused ? "#1F335B" : "#79859D",
                   fontFamily: "Kodchasan",
+                  fontSize: focused ? 14 : 13,
                 }}
               >
                 jadwal
@@ -74,7 +76,7 @@ export default function TabLayout() {
                 <Ionicons
                   name="person-circle-sharp"
                   size={26}
-                  color="#1F335B"
+                  color="#3E95CC"
                 />
               ) : (
                 <Ionicons
@@ -87,6 +89,7 @@ export default function TabLayout() {
                 style={{
                   color: focused ? "#1F335B" : "#79859D",
                   fontFamily: "Kodchasan",
+                  fontSize: focused ? 14 : 13,
                 }}
               >
                 beranda

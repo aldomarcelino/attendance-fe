@@ -23,19 +23,71 @@ import KRSIcon from "@/assets/icon/khs-icon.svg";
 import MoneyIcon from "@/assets/icon/money-icon.svg";
 import SettingIcon from "@/assets/icon/settings-icon.svg";
 import BurgerIcon from "@/assets/icon/burger-icon.svg";
+import AchivementIcon from "@/assets/icon/achievement.svg";
 import { router } from "expo-router";
+import { getLocalStorage } from "@/utils/AsyncStorage";
+import axios from "axios";
+import { Skeleton } from "moti/skeleton";
+import {
+  SimpleLineIcons,
+  Entypo,
+  FontAwesome,
+  Ionicons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+
+interface Matkul {
+  name: string;
+  id: string;
+  user_id: string;
+  mk_code: string;
+  group: string;
+  days: number;
+  hours_start: string;
+  hours_end: string;
+  status: string;
+  room: string;
+  createdAt: Date;
+  updatedAt: Date;
+  sks: number;
+}
 
 export default function HomeScreen() {
   const [showMore, setSowMore] = useState(false);
   const [location, setLocation] = useState("Waiting...");
   const [errorMsg, setErrorMsg] = useState("");
   const [latlong, setLatlong] = useState("waiting....");
+  const [data, setData] = useState<Matkul | undefined | string>(undefined);
+  const [isDone, setIsDone] = useState(false);
+  const [, setError] = useState("");
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
+  const handleGetSheculde = async () => {
+    try {
+      const access_token = String(await getLocalStorage("access_token"));
+
+      const { data } = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/matkul/today-matkul`,
+        {
+          headers: {
+            access_token,
+          },
+        }
+      );
+      setIsDone(true);
+      if (data && data.matkul) setData(data.matkul);
+      else setData("finish");
+    } catch (e: any) {
+      setError(e.response.data.message);
+    }
+  };
+
+  // Asking Location
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -58,10 +110,19 @@ export default function HomeScreen() {
     })();
   }, []);
 
+  useEffect(() => {
+    handleGetSheculde();
+    const myInterfal = setInterval(() => {
+      handleGetSheculde();
+    }, 300000);
+
+    clearInterval(myInterfal);
+  }, []);
+
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView>
-        <View>
+        <View style={{ height: data === "finish" ? 290 : 260 }}>
           <Image
             alt="App heading"
             style={styles.headerImg}
@@ -71,14 +132,16 @@ export default function HomeScreen() {
           <View style={styles.headContain}>
             <View style={styles.wrapper}>
               <View style={styles.wrapUser}>
-                <Image
-                  alt="User Profile"
-                  style={styles.userImg}
-                  resizeMode="cover"
-                  source={{
-                    uri: "https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  }}
-                />
+                <Pressable onPress={handleGetSheculde}>
+                  <Image
+                    alt="User Profile"
+                    style={styles.userImg}
+                    resizeMode="cover"
+                    source={{
+                      uri: "https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    }}
+                  />
+                </Pressable>
                 <View>
                   <Text style={styles.name}>Aldo Marcelino</Text>
                   <Text style={styles.nim}>A11.2020.10596</Text>
@@ -104,39 +167,221 @@ export default function HomeScreen() {
                 </Text>
               </View>
               <View style={styles.line} />
-              <Text style={styles.message}>
-                Jangan lewatkan presensimu hari ini!
-              </Text>
-              <View style={styles.flexCenter}>
-                <BookIcon width={36} height={36} />
-                <View>
-                  <Text style={styles.matkulName}>
-                    Interaksi Manusia Komputer
-                  </Text>
-                  <Text style={styles.matkulTime}>
-                    Kamis, 07.00-09.30 (H.4.5)
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.statusWrap}>
-                <Text style={styles.statusText}>Available</Text>
-              </View>
 
-              <TouchableOpacity
-                onPress={() => {
-                  // handle onPress
-                }}
-              >
-                <LinearGradient
-                  start={{ x: 1, y: 0 }}
-                  end={{ x: 0, y: 0 }}
-                  colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
-                  style={styles.btn}
-                >
-                  <CameraIcon width={14} height={14} />
-                  <Text style={styles.btnText}>Clock in</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+              {!data ? (
+                <>
+                  <Skeleton
+                    colorMode="light"
+                    width={"60%"}
+                    height={16}
+                    radius="square"
+                  />
+                  <Spacer height={12} />
+                  <Skeleton
+                    colorMode="light"
+                    width="100%"
+                    height={74}
+                    radius="square"
+                  />
+                </>
+              ) : (
+                <>
+                  {typeof data === "object" ? (
+                    <>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={styles.message}>
+                          Jangan lewatkan presensimu hari ini!
+                        </Text>
+                        <View style={styles.outter}>
+                          <View style={styles.inner} />
+                        </View>
+                      </View>
+                      <View style={styles.flexCenter}>
+                        <BookIcon width={41} height={41} />
+                        <View style={{ marginLeft: 3 }}>
+                          <Text style={styles.matkulName}>{data.name}</Text>
+                          <Text style={styles.matkulTime}>
+                            {`${days[data.days]}, ${data.hours_start}:${
+                              data.hours_end
+                            } (${data.room})`}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.statusWrap}>
+                        <Text style={styles.statusText}>Available</Text>
+                      </View>
+
+                      <TouchableOpacity
+                        onPress={() => {
+                          // handle onPress
+                        }}
+                      >
+                        <LinearGradient
+                          start={{ x: 1, y: 0 }}
+                          end={{ x: 0, y: 0 }}
+                          colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+                          style={styles.btn}
+                        >
+                          <CameraIcon width={17} height={17} />
+                          <Text style={styles.btnText}>Clock in</Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "center",
+                          marginBottom: 8,
+                        }}
+                      >
+                        <Text style={styles.jurusan}>
+                          Achivement di Teknik Informatika
+                        </Text>
+                        <AchivementIcon />
+                      </View>
+
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <View
+                          style={{
+                            borderRadius: 20,
+                            alignItems: "center",
+                            backgroundColor: "#fff",
+                          }}
+                        >
+                          <LinearGradient
+                            start={{ x: 1, y: 0 }}
+                            end={{ x: 0, y: 0 }}
+                            colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+                            style={{
+                              paddingHorizontal: 9,
+                              paddingVertical: 8,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRadius: 10,
+                              shadowColor: "#000000",
+                              shadowOffset: {
+                                width: 0.3,
+                                height: 0.3,
+                              },
+                              shadowRadius: 0.3,
+                              shadowOpacity: 0.3,
+                            }}
+                          >
+                            <MaterialIcons
+                              name="backpack"
+                              size={24}
+                              color="white"
+                            />
+                            <Text style={styles.titleOnHead}>
+                              Semester Genap
+                            </Text>
+                            <Text style={styles.descOnHead}>T.A 2023/2024</Text>
+                          </LinearGradient>
+                        </View>
+                        <View
+                          style={{
+                            borderRadius: 20,
+                            alignItems: "center",
+                            backgroundColor: "#fff",
+                          }}
+                        >
+                          <LinearGradient
+                            start={{ x: 1, y: 0 }}
+                            end={{ x: 0, y: 0 }}
+                            colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+                            style={{
+                              paddingHorizontal: 14,
+                              paddingVertical: 8,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRadius: 10,
+                              shadowColor: "#000000",
+                              shadowOffset: {
+                                width: 0.3,
+                                height: 0.3,
+                              },
+                              shadowRadius: 0.3,
+                              shadowOpacity: 0.3,
+                            }}
+                          >
+                            <FontAwesome name="book" size={24} color="white" />
+                            <Text style={styles.titleOnHead}>20 SKS</Text>
+                            <Text style={styles.descOnHead}>8 Mata Kuliah</Text>
+                          </LinearGradient>
+                        </View>
+                        <View
+                          style={{
+                            borderRadius: 20,
+                            alignItems: "center",
+                            backgroundColor: "#fff",
+                          }}
+                        >
+                          <LinearGradient
+                            start={{ x: 1, y: 0 }}
+                            end={{ x: 0, y: 0 }}
+                            colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+                            style={{
+                              paddingHorizontal: 14,
+                              paddingVertical: 8,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRadius: 10,
+                              shadowColor: "#000000",
+                              shadowOffset: {
+                                width: 0.3,
+                                height: 0.3,
+                              },
+                              shadowRadius: 0.3,
+                              shadowOpacity: 0.3,
+                            }}
+                          >
+                            <SimpleLineIcons
+                              name="notebook"
+                              size={24}
+                              color="white"
+                            />
+                            <Text style={styles.titleOnHead}>120 SKS</Text>
+                            <Text style={styles.descOnHead}>Telah Diambil</Text>
+                          </LinearGradient>
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 4,
+                          alignItems: "center",
+                          marginTop: 12,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Entypo
+                          name="graduation-cap"
+                          size={24}
+                          color="#79859D"
+                        />
+                        <Text style={styles.keepUP}>
+                          Keep it up, Kamu akan lulus di
+                        </Text>
+                        <Text style={styles.year}>July 2025</Text>
+                      </View>
+                    </>
+                  )}
+                </>
+              )}
             </View>
           </View>
         </View>
@@ -345,6 +590,8 @@ export default function HomeScreen() {
   );
 }
 
+const Spacer = ({ height = 16 }) => <View style={{ height }} />;
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 0,
@@ -370,7 +617,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "#FFF",
     padding: 16,
-    height: 181,
+    minHeight: 181,
     shadowColor: "#000000",
     shadowOffset: {
       width: 0.1,
@@ -407,6 +654,11 @@ const styles = StyleSheet.create({
   },
   nim: {
     color: "#fff",
+  },
+  jurusan: {
+    color: "#000000",
+    fontFamily: "Opensans",
+    fontSize: 15,
   },
   dot: {
     position: "absolute",
@@ -450,7 +702,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   btn: {
-    padding: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
@@ -463,22 +716,24 @@ const styles = StyleSheet.create({
   btnText: {
     color: "#FFF",
     fontFamily: "KodchasanBold",
-    fontSize: 12,
+    fontSize: 13,
     backgroundColor: "transparent",
   },
   statusWrap: {
+    maxWidth: 110,
     borderRadius: 20,
     backgroundColor: "#DDFFED",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    maxWidth: 110,
-    alignSelf: "flex-end",
+    paddingHorizontal: 11,
+    paddingVertical: 3,
     marginVertical: 3,
+    borderColor: "#62DCB2",
+    borderWidth: 0.3,
+    alignSelf: "flex-end",
   },
   statusText: {
     fontFamily: "Mulish",
     fontSize: 10,
-    color: "#69758B",
+    color: "#1F335B",
   },
   wrapMenu: {
     marginTop: 100,
@@ -540,5 +795,44 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 36,
     alignItems: "center",
+  },
+  titleOnHead: {
+    fontFamily: "MulishBold",
+    fontSize: 15,
+    color: "#fff",
+    marginTop: 4,
+  },
+  descOnHead: {
+    fontFamily: "Mulish",
+    fontSize: 9,
+    color: "#fff",
+  },
+  keepUP: {
+    fontFamily: "Opensans",
+    fontSize: 10,
+    color: "#79859D",
+  },
+  year: {
+    fontFamily: "OpensansBold",
+    fontSize: 12,
+    color: "#62DCB2",
+  },
+  outter: {
+    top: 0,
+    right: 0,
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: "#3A9DD1",
+    borderWidth: 1,
+    height: 14,
+    width: 14,
+    borderRadius: 18,
+  },
+  inner: {
+    backgroundColor: "#3A9DD1",
+    height: 9,
+    width: 9,
+    borderRadius: 9,
   },
 });
