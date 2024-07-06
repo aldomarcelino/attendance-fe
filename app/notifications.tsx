@@ -25,7 +25,7 @@ const NotificationScreen = () => {
       >
         <View style={styles.wrapTitle}>
           <Pressable style={styles.arrowIcon} onPress={() => router.back()}>
-            <ArrowIcon height={24} width={24} />
+            <ArrowIcon height={21} width={21} />
           </Pressable>
           <Text style={styles.title}>Notifikasi</Text>
         </View>
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
+    paddingVertical: 11,
   },
   title: { fontFamily: "KodchasanBold", fontSize: 18, color: "#1F335B" },
   arrowIcon: {

@@ -92,7 +92,7 @@ export default function TabLayout() {
                   fontSize: focused ? 14 : 13,
                 }}
               >
-                beranda
+                profile
               </Text>
             </View>
           ),

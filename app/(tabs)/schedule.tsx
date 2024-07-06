@@ -119,7 +119,7 @@ const ScheduleScreen = () => {
         {/* Header */}
         <View style={styles.wrapTitle}>
           <Pressable style={styles.arrowIcon} onPress={() => router.back()}>
-            <ArrowIcon height={24} width={24} />
+            <ArrowIcon height={21} width={21} />
           </Pressable>
           <Text style={styles.title}>Jadwal</Text>
         </View>
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 0.5,
     shadowOpacity: 0.2,
-    marginTop: 24,
+    marginBottom: 24,
   },
   wrapping: {
     padding: 20,

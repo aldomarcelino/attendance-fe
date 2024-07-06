@@ -32,7 +32,7 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <View style={styles.heading}>
+        <View style={{ ...styles.heading, marginTop: 23 }}>
           <View style={styles.wrapper}>
             <View style={styles.wrapUser}>
               <Image

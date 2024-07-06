@@ -54,7 +54,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        `http:127.0.0.1:3000/user/signin`,
+        `${process.env.EXPO_PUBLIC_API_URL}/user/signin`,
         form
       );
       if (response.status == 200) {
@@ -64,6 +64,7 @@ export default function Login() {
       }
     } catch (e: any) {
       setLoading(false);
+      console.log(e, "<<<error");
       setError(e.response && e.response.data.message);
     }
   };
