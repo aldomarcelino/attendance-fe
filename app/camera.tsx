@@ -2,18 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
-  Linking,
   View,
   Pressable,
   ActivityIndicator,
   Image,
+  Linking,
 } from "react-native";
 import {
-  Camera,
+  Frame,
   PhotoFile,
+  Camera as VisionCamera,
   useCameraDevice,
   useCameraPermission,
-  useFrameProcessor,
 } from "react-native-vision-camera";
 import { Stack, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -23,17 +23,58 @@ import ErrorImage from "@/assets/images/error.svg";
 import { useIsFocused } from "@react-navigation/native";
 import { useAppState } from "@react-native-community/hooks";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { runOnJS } from "react-native-reanimated";
+import {
+  FaceDetectionOptions,
+  Face,
+  Camera,
+} from "react-native-vision-camera-face-detector";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 export default function TabTwoScreen() {
   const device = useCameraDevice("front");
   const isFocused = useIsFocused();
   const appState = useAppState();
   const isActive = isFocused && appState === "active";
-  const camera = useRef<Camera>(null);
-  const { hasPermission } = useCameraPermission();
+  const camera = useRef<VisionCamera>(null);
+  const { hasPermission, requestPermission } = useCameraPermission();
   const [photo, setPhoto] = useState<PhotoFile>();
-  // const [faces, setFaces] = useState<Face[]>([]);
+  const [isPass, setIsPass] = useState(false);
+  const faceDetectionOptions = useRef<FaceDetectionOptions>({
+    performanceMode: "fast",
+    classificationMode: "all",
+  }).current;
+  const aFaceW = useSharedValue(0);
+  const aFaceH = useSharedValue(0);
+  const aFaceX = useSharedValue(0);
+  const aFaceY = useSharedValue(0);
+  const aRot = useSharedValue(0);
+  const animatedStyle = useAnimatedStyle(() => ({
+    position: "absolute",
+    borderWidth: 1.5,
+    borderRadius: 5,
+    borderColor: isPass ? "white" : "#E7031E",
+    width: withTiming(aFaceW.value, {
+      duration: 100,
+    }),
+    height: withTiming(aFaceH.value, {
+      duration: 100,
+    }),
+    left: withTiming(aFaceX.value, {
+      duration: 100,
+    }),
+    top: withTiming(aFaceY.value, {
+      duration: 100,
+    }),
+    transform: [
+      {
+        rotate: `${aRot.value}deg`,
+      },
+    ],
+  }));
 
   const handleTakePict = async () => {
     try {
@@ -46,19 +87,36 @@ export default function TabTwoScreen() {
     }
   };
 
-  // const frameProcessor = useFrameProcessor((frame) => {
-  //   "worklet";
-  //   const detectedFaces = scanFaces(frame);
-  //   runOnJS(setFaces)(detectedFaces);
-  // }, []);
+  const handleCameraMountError = (error: any) => {
+    console.error("camera mount error", error);
+  };
+
+  const handleFacesDetected = (faces: Face[], frame: Frame): void => {
+    console.log("faces", faces.length, "frame", frame.toString());
+    // if no faces are detected we do nothing
+    setIsPass(faces.length ? true : false);
+    if (Object.keys(faces).length <= 0) return;
+
+    const { bounds } = faces[0];
+    const { width, height, x, y } = bounds;
+    aFaceW.value = width;
+    aFaceH.value = height;
+    aFaceX.value = x;
+    aFaceY.value = y;
+  };
+
+  const handleUiRotation = (rotation: number) => {
+    aRot.value = rotation;
+  };
 
   useEffect(() => {
     const getPermision = async () => {
-      const permision = await Camera.requestCameraPermission();
-      if (permision == "denied") await Linking.openSettings();
+      if (hasPermission) return;
+      const permision = await requestPermission();
+      if (!permision) await Linking.openSettings();
     };
     getPermision();
-  }, [hasPermission]);
+  }, []);
 
   if (!hasPermission)
     return (
@@ -110,21 +168,20 @@ export default function TabTwoScreen() {
         <Camera
           ref={camera}
           style={StyleSheet.absoluteFill}
-          device={device}
           isActive={isActive && !photo}
+          device={device}
+          onError={handleCameraMountError}
+          faceDetectionCallback={handleFacesDetected}
+          outputOrientation={"device"}
+          onUIRotationChanged={handleUiRotation}
+          faceDetectionOptions={{
+            ...faceDetectionOptions,
+            autoScale: true,
+          }}
           photo={true}
-          // frameProcessor={frameProcessor}
         />
 
-        {/* {faces.length > 0 && (
-          <View style={styles.facesContainer}>
-            {faces.map((face, index) => (
-              <View key={index} style={styles.faceBox}>
-                <Text>Face detected: {index + 1}</Text>
-              </View>
-            ))}
-          </View>
-        )} */}
+        <Animated.View style={animatedStyle} />
 
         {photo ? (
           <>
@@ -133,7 +190,8 @@ export default function TabTwoScreen() {
               style={styles.photos}
             />
 
-            <View style={styles.btnWrap}>
+            <View style={styles.btnWrap} />
+            <View style={styles.secondWrap}>
               <View
                 style={{
                   flexDirection: "row",
@@ -146,6 +204,9 @@ export default function TabTwoScreen() {
                   style={{
                     ...styles.button,
                     backgroundColor: "white",
+                  }}
+                  onPress={() => {
+                    setPhoto(undefined);
                   }}
                 >
                   <Ionicons
@@ -177,7 +238,8 @@ export default function TabTwoScreen() {
           </>
         ) : (
           <>
-            <Pressable style={styles.btnWrap} onPress={handleTakePict}>
+            <View style={styles.btnWrap} />
+            <Pressable style={styles.secondWrap} onPress={handleTakePict}>
               <LinearGradient
                 start={{ x: 1, y: 0 }}
                 end={{ x: 0, y: 0 }}
@@ -202,7 +264,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    top: 37,
+    bottom: 47,
+    zIndex: 3,
   },
   btnWrap: {
     position: "absolute",
@@ -211,14 +274,16 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 150,
     alignItems: "center",
-    opacity: 0.9,
+    opacity: 0.8,
+    borderTopLeftRadius: 11,
+    borderTopRightRadius: 11,
   },
-  head: {
-    width: "100%",
-    height: 109,
+  secondWrap: {
     position: "absolute",
-    top: 0,
-    zIndex: 2,
+    bottom: 0,
+    width: "100%",
+    height: 150,
+    alignItems: "center",
   },
   title: { fontFamily: "KodchasanBold", fontSize: 18, color: "#fff" },
   arrowIcon: {
@@ -256,20 +321,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "white",
     textAlign: "center",
-  },
-  facesContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  faceBox: {
-    borderWidth: 2,
-    borderColor: "red",
-    padding: 10,
-    margin: 5,
   },
 });
