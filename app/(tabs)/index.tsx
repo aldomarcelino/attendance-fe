@@ -24,7 +24,7 @@ import MoneyIcon from "@/assets/icon/money-icon.svg";
 import SettingIcon from "@/assets/icon/settings-icon.svg";
 import BurgerIcon from "@/assets/icon/burger-icon.svg";
 import AchivementIcon from "@/assets/icon/achievement.svg";
-import { Stack, router } from "expo-router";
+import { router } from "expo-router";
 import { getLocalStorage } from "@/utils/AsyncStorage";
 import axios from "axios";
 import { Skeleton } from "moti/skeleton";
@@ -33,9 +33,11 @@ import {
   Entypo,
   FontAwesome,
   MaterialIcons,
+  FontAwesome5,
 } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
+import ErrorModals from "../components/error-modal";
 
 interface Matkul {
   name: string;
@@ -65,6 +67,7 @@ export default function HomeScreen() {
   const [, setErrorMsg] = useState("");
   const [data, setData] = useState<Matkul | undefined | string>(undefined);
   const [, setError] = useState("");
+  const [open, setOpen] = useState(false);
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
   const handleGetSheculde = async () => {
@@ -148,14 +151,17 @@ export default function HomeScreen() {
             <View style={styles.headContain}>
               <View style={styles.wrapper}>
                 <View style={styles.wrapUser}>
-                  <Pressable onPress={handleGetSheculde}>
+                  <Pressable
+                    onPress={() => {
+                      setOpen(true);
+                      handleGetSheculde();
+                    }}
+                  >
                     <Image
                       alt="User Profile"
                       style={styles.userImg}
                       resizeMode="cover"
-                      source={{
-                        uri: "https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                      }}
+                      source={require("@/assets/images/profile.jpeg")}
                     />
                   </Pressable>
                   <View>
@@ -428,7 +434,7 @@ export default function HomeScreen() {
                                 size={24}
                                 color="white"
                               />
-                              <Text style={styles.titleOnHead}>120 SKS</Text>
+                              <Text style={styles.titleOnHead}>128 SKS</Text>
                               <Text style={styles.descOnHead}>
                                 Telah Diambil
                               </Text>
@@ -452,7 +458,7 @@ export default function HomeScreen() {
                           <Text style={styles.keepUP}>
                             Keep it up, Kamu akan lulus di
                           </Text>
-                          <Text style={styles.year}>July 2025</Text>
+                          <Text style={styles.year}>July 2024</Text>
                         </View>
                       </>
                     )}
@@ -465,12 +471,15 @@ export default function HomeScreen() {
           {/* Menu */}
           <View style={styles.wrapMenu}>
             <View style={styles.flexed}>
-              <View style={{ alignItems: "center", width: 48 }}>
+              <Pressable
+                onPress={() => router.push("attendance")}
+                style={{ alignItems: "center", width: 48 }}
+              >
                 <View style={styles.containMenu}>
                   <WidgetIcon height={24} width={24} />
                 </View>
                 <Text style={styles.menuTitle}>Kehadiran</Text>
-              </View>
+              </Pressable>
               <View style={{ alignItems: "center", width: 48 }}>
                 <View style={styles.containMenu}>
                   <KHSIcon height={24} width={24} />
@@ -546,7 +555,12 @@ export default function HomeScreen() {
                 flexDirection: "row",
               }}
             >
-              {[1, 2, 3, 4].map((e) => (
+              {[
+                "Daftar Akun SUPREMO",
+                "Pengisian KRS",
+                "Pengajuan Dosen Pembimbing",
+                "Lorem Ipsum Dolore",
+              ].map((e, idx) => (
                 <View key={`index-${e}`}>
                   <View
                     style={{
@@ -577,7 +591,21 @@ export default function HomeScreen() {
                         shadowOpacity: 0.3,
                       }}
                     >
-                      <CameraIcon width={28} height={28} />
+                      {idx == 0 ? (
+                        <CameraIcon width={28} height={28} />
+                      ) : idx == 1 ? (
+                        <FontAwesome5
+                          name="newspaper"
+                          size={24}
+                          color="white"
+                        />
+                      ) : (
+                        <MaterialIcons
+                          name="person-search"
+                          size={24}
+                          color="white"
+                        />
+                      )}
                     </LinearGradient>
                     <View>
                       <Text
@@ -590,7 +618,7 @@ export default function HomeScreen() {
                           marginTop: 8,
                         }}
                       >
-                        Daftar Akun EKUID
+                        {e}
                       </Text>
                     </View>
                   </View>
@@ -622,8 +650,8 @@ export default function HomeScreen() {
                   color: "#1F335B",
                 }}
               >
-                Salad Poin: Menelusuri Potensi Investasi Menjanjikan di Brand
-                Salad Lokal
+                Beasiswa Djarum: Jangan ketinggalan coba ikut dan dapatkan
+                Beasiswa 4 semester
               </Text>
             </View>
             <Text
@@ -634,7 +662,7 @@ export default function HomeScreen() {
                 lineHeight: 18,
               }}
             >
-              12 Mei 2024
+              17 Jun 2024
             </Text>
             <View style={styles.lineSecondary} />
             <View style={{ height: 42, marginBottom: 8 }}>
@@ -646,8 +674,8 @@ export default function HomeScreen() {
                   color: "#1F335B",
                 }}
               >
-                Salad Poin: Menelusuri Potensi Investasi Menjanjikan di Brand
-                Salad Lokal
+                Event: Pengumuman Penerimaan Proposal Penelitian kepada
+                Masyarakat Anggaran 2024
               </Text>
             </View>
             <Text
@@ -658,11 +686,18 @@ export default function HomeScreen() {
                 lineHeight: 18,
               }}
             >
-              12 Mei 2024
+              19 Mei 2024
             </Text>
           </View>
         </KeyboardAwareScrollView>
       </View>
+
+      {/* error modal */}
+      <ErrorModals
+        visible={open}
+        onClose={() => setOpen(false)}
+        status={"other"}
+      />
     </>
   );
 }

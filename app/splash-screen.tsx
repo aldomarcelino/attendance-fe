@@ -8,7 +8,7 @@ const SplashScreen = () => {
     setTimeout(() => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setisActive(true);
-    }, 1000);
+    }, 1500);
   }, []);
 
   return (

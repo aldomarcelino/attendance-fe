@@ -45,7 +45,7 @@ const ScheduleScreen = () => {
   // const hours = new Date().getHours();
   // const minute = new Date().getMinutes();
 
-  const today = 5;
+  const today = 4;
   const hours = 7;
   const minute = 30;
   const [, setError] = useState("");
@@ -54,8 +54,6 @@ const ScheduleScreen = () => {
   const [curName, setCurName] = useState("");
 
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
-  console.log(minute, "<<<minute");
 
   const handleGetSheculde = async () => {
     try {
