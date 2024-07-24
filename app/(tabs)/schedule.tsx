@@ -55,8 +55,6 @@ const ScheduleScreen = () => {
 
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
-  console.log(minute, "<<<minute");
-
   const handleGetSheculde = async () => {
     try {
       const access_token = String(await getLocalStorage("access_token"));

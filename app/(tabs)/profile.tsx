@@ -58,8 +58,6 @@ export default function Profile() {
     }
   };
 
-  console.log(data, "<<data");
-
   useEffect(() => {
     handleGetProfile();
   }, []);

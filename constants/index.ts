@@ -109,16 +109,20 @@ export const userAttendance = [
         date: "09-05-2024",
         status: true,
       },
+      // {
+      //   date: "16-05-2024",
+      //   status: true,
+      // },
+      // {
+      //   date: "23-05-2024",
+      //   status: true,
+      // },
+      // {
+      //   date: "30-05-2024",
+      //   status: true,
+      // },
       {
-        date: "16-05-2024",
-        status: true,
-      },
-      {
-        date: "23-05-2024",
-        status: true,
-      },
-      {
-        date: "30-05-2024",
+        date: "19-07-2024",
         status: true,
       },
     ],

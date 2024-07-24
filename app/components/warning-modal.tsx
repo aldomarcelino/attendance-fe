@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -30,7 +30,7 @@ const WarningModals: React.FC<WarningModalsProps> = ({
           <Text style={styles.modalText}>
             {`Kelas '${matkul}' belum dimulai atau sudah lewat, tunggu sampai dengan waktu yang dijadwalkan untuk melakukan presensi.`}
           </Text>
-          <Pressable onPress={onClose}>
+          <TouchableOpacity onPress={onClose}>
             <LinearGradient
               start={{ x: 1, y: 0 }}
               end={{ x: 0, y: 0 }}
@@ -39,7 +39,7 @@ const WarningModals: React.FC<WarningModalsProps> = ({
             >
               <Text style={styles.btnText}>Kembali</Text>
             </LinearGradient>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>

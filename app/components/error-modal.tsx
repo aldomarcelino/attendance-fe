@@ -1,7 +1,13 @@
 import React from "react";
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { AntDesign } from "@expo/vector-icons";
 import ErrorImage from "@/assets/images/error.svg";
 
 interface ErrorModalsProps {
@@ -46,7 +52,7 @@ const ErrorModals: React.FC<ErrorModalsProps> = ({
               }`}
             </Text>
           </View>
-          <Pressable onPress={onClose}>
+          <TouchableOpacity onPress={onClose}>
             <LinearGradient
               start={{ x: 1, y: 0 }}
               end={{ x: 0, y: 0 }}
@@ -57,7 +63,7 @@ const ErrorModals: React.FC<ErrorModalsProps> = ({
                 {status == "image" ? "Ambil Ulang" : "Kembali"}
               </Text>
             </LinearGradient>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>

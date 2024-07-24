@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Image,
   Linking,
+  TouchableOpacity,
 } from "react-native";
 import {
   Frame,
@@ -46,7 +47,7 @@ export default function TabTwoScreen() {
   const [photo, setPhoto] = useState<PhotoFile>();
   const [isPass, setIsPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
   const [status, setStatus] = useState("");
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const faceDetectionOptions = useRef<FaceDetectionOptions>({
@@ -226,7 +227,7 @@ export default function TabTwoScreen() {
                   marginTop: 39,
                 }}
               >
-                <Pressable
+                <TouchableOpacity
                   style={{
                     ...styles.button,
                     backgroundColor: "white",
@@ -243,8 +244,8 @@ export default function TabTwoScreen() {
                   <Text style={{ ...styles.btnText, color: "#000000" }}>
                     Ambil Ulang
                   </Text>
-                </Pressable>
-                <Pressable onPress={handleSubmit}>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleSubmit}>
                   <LinearGradient
                     start={{ x: 1, y: 0 }}
                     end={{ x: 0, y: 0 }}
@@ -258,14 +259,17 @@ export default function TabTwoScreen() {
                       color="white"
                     />
                   </LinearGradient>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             </View>
           </>
         ) : (
           <>
             <View style={styles.btnWrap} />
-            <Pressable style={styles.secondWrap} onPress={handleTakePict}>
+            <TouchableOpacity
+              style={styles.secondWrap}
+              onPress={handleTakePict}
+            >
               <LinearGradient
                 start={{ x: 1, y: 0 }}
                 end={{ x: 0, y: 0 }}
@@ -274,7 +278,7 @@ export default function TabTwoScreen() {
               >
                 <CameraIcon width={32} height={32} />
               </LinearGradient>
-            </Pressable>
+            </TouchableOpacity>
           </>
         )}
       </View>

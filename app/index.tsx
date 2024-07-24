@@ -62,7 +62,6 @@ export default function Login() {
       }
     } catch (e: any) {
       setLoading(false);
-      console.log(e, "<<<error");
       setError(e.response && e.response.data.message);
     }
   };
