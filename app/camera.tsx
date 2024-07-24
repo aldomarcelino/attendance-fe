@@ -33,6 +33,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import ErrorModals from "./components/error-modal";
+import Loading from "./components/loading";
 
 export default function TabTwoScreen() {
   const device = useCameraDevice("front");
@@ -43,6 +45,10 @@ export default function TabTwoScreen() {
   const { hasPermission, requestPermission } = useCameraPermission();
   const [photo, setPhoto] = useState<PhotoFile>();
   const [isPass, setIsPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(0);
+  const [status, setStatus] = useState("");
+  const [openErrorModal, setOpenErrorModal] = useState(false);
   const faceDetectionOptions = useRef<FaceDetectionOptions>({
     performanceMode: "fast",
     classificationMode: "all",
@@ -79,7 +85,6 @@ export default function TabTwoScreen() {
   const handleTakePict = async () => {
     try {
       const picture = await camera.current?.takePhoto();
-      console.log(picture, "<<<pict");
       // Add a small delay before setting the photo to ensure it's ready
       setTimeout(() => setPhoto(picture), 100);
     } catch (error) {
@@ -107,6 +112,22 @@ export default function TabTwoScreen() {
 
   const handleUiRotation = (rotation: number) => {
     aRot.value = rotation;
+  };
+
+  const handleSubmit = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setCount(count + 1);
+      setLoading(false);
+      if (count == 0) {
+        setOpenErrorModal(true);
+        setStatus("network");
+      } else if (count == 1) {
+        setOpenErrorModal(true);
+        setStatus("image");
+      } else router.push("success-face");
+    }, 2000);
   };
 
   useEffect(() => {
@@ -145,11 +166,16 @@ export default function TabTwoScreen() {
     );
   return (
     <>
+      {loading && <Loading />}
+
       <Stack.Screen
         options={{
           headerTitle: "Ambil Foto Selfi",
           headerLeft: () => (
-            <Pressable style={styles.arrowIcon} onPress={() => router.back()}>
+            <Pressable
+              style={styles.arrowIcon}
+              onPress={() => router.push("/")}
+            >
               <ArrowIcon height={20} width={20} />
             </Pressable>
           ),
@@ -218,7 +244,7 @@ export default function TabTwoScreen() {
                     Ambil Ulang
                   </Text>
                 </Pressable>
-                <Pressable>
+                <Pressable onPress={handleSubmit}>
                   <LinearGradient
                     start={{ x: 1, y: 0 }}
                     end={{ x: 0, y: 0 }}
@@ -252,6 +278,13 @@ export default function TabTwoScreen() {
           </>
         )}
       </View>
+
+      {/* Error Modal  */}
+      <ErrorModals
+        status={status}
+        visible={openErrorModal}
+        onClose={() => setOpenErrorModal(false)}
+      />
     </>
   );
 }

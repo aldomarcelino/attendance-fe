@@ -1,41 +1,138 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
+import React from "react";
+import { PropsWithChildren } from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Colors } from '@/constants/Colors';
+import { ThemedView } from "@/components/ThemedView";
+import { View } from "moti";
+import { MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const theme = useColorScheme() ?? 'light';
-
+export function Collapsible({
+  children,
+  title,
+  hadir,
+  persentage,
+  desc,
+  index,
+  curIdx,
+  setCurIdx,
+}: PropsWithChildren & {
+  title: string;
+  hadir: number;
+  persentage: string;
+  desc: string;
+  index: number;
+  curIdx: number | null | undefined;
+  setCurIdx: (value: any) => void;
+}) {
   return (
     <ThemedView>
       <TouchableOpacity
-        style={styles.heading}
-        onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
-        <Ionicons
-          name={isOpen ? 'chevron-down' : 'chevron-forward-outline'}
-          size={18}
-          color={theme === 'light' ? Colors.light.icon : Colors.dark.icon}
-        />
-        <ThemedText type="defaultSemiBold">{title}</ThemedText>
+        onPress={() => {
+          if (curIdx == index) setCurIdx(null);
+          else setCurIdx(index);
+        }}
+        activeOpacity={0.8}
+      >
+        <View style={styles.flexBetween}>
+          <Text style={styles.matkul}>{title}</Text>
+          <MaterialIcons
+            name={curIdx == index ? "arrow-drop-up" : "arrow-drop-down"}
+            size={24}
+            color="black"
+          />
+        </View>
+        <Text style={styles.desc}>{desc}</Text>
+        <View style={styles.contain}>
+          <View style={styles.wrap}>
+            <Text style={styles.miniTitle}>Hadir</Text>
+
+            <LinearGradient
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 0 }}
+              colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+              style={styles.wrapVal}
+            >
+              <Text style={styles.btnText}>{hadir}</Text>
+            </LinearGradient>
+          </View>
+          <View style={{ ...styles.wrap, width: 170 }}>
+            <Text style={styles.miniTitle}>Persentase</Text>
+
+            <LinearGradient
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 0 }}
+              colors={["#3A9DD1", "#408EC7", "#3C70B7"]}
+              style={styles.wrapVal}
+            >
+              <Text style={styles.btnText}>{persentage}</Text>
+            </LinearGradient>
+          </View>
+        </View>
       </TouchableOpacity>
-      {isOpen && <ThemedView style={styles.content}>{children}</ThemedView>}
+      {curIdx == index && (
+        <ThemedView style={styles.content}>{children}</ThemedView>
+      )}
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
   content: {
     marginTop: 6,
-    marginLeft: 24,
+  },
+  contain: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 20,
+  },
+  matkul: {
+    color: "#1F335B",
+    fontFamily: "OpensansBold",
+    fontSize: 15,
+    lineHeight: 18,
+  },
+  desc: {
+    color: "#79859D",
+    fontFamily: "Opensans",
+    fontSize: 10,
+    lineHeight: 18,
+  },
+  flexBetween: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  wrap: {
+    marginTop: 13,
+    flexDirection: "row",
+    gap: 11,
+    alignItems: "center",
+    borderRadius: 9,
+    paddingVertical: 5,
+    paddingHorizontal: 11,
+    borderColor: "#79859D",
+    borderWidth: 1,
+    justifyContent: "center",
+    width: 100,
+  },
+  miniTitle: {
+    color: "#1F335B",
+    fontFamily: "OpensansBold",
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  wrapVal: {
+    paddingVertical: 4,
+    paddingHorizontal: 9,
+    alignItems: "center",
+    borderRadius: 7,
+    flexDirection: "row",
+  },
+  btnText: {
+    color: "#FFF",
+    fontFamily: "KodchasanBold",
+    fontSize: 13,
+    backgroundColor: "transparent",
   },
 });

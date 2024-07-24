@@ -31,8 +31,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
 
-  console.log(process.env.EXPO_PUBLIC_API_URL, "<<<");
-
   const clearError = () => {
     setErrors({ nim: "", password: "" });
     setError("");
@@ -107,7 +105,7 @@ export default function Login() {
             <Text style={styles.message}>Selamat datang Dinusian</Text>
             <View style={{ maxWidth: 258, alignSelf: "center" }}>
               <Text style={styles.desc}>
-                Silakan masukan NIM agar bisa masuk ke akun AttendEasy Anda dan
+                Silakan masukan NIM agar bisa masuk ke akun SIPREMO Anda dan
                 mulai rasakan mudahnya presensi
               </Text>
             </View>
