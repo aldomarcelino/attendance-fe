@@ -42,12 +42,12 @@ interface DataState {
 const ScheduleScreen = () => {
   // Initialize State
   // const today = new Date().getDay();
-  // const hours = new Date().getHours();
-  // const minute = new Date().getMinutes();
+  const hours = new Date().getHours();
+  const minute = new Date().getMinutes();
 
-  const today = 5;
-  const hours = 7;
-  const minute = 30;
+  const today = 4;
+  // const hours = 5;
+  // const minute = 57;
   const [, setError] = useState("");
   const [showWarnModal, setShowWarnModal] = useState(false);
   const [data, setData] = useState<DataState>({});

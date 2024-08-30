@@ -56,10 +56,10 @@ interface Matkul {
 }
 
 export default function HomeScreen() {
-  // const hours = new Date().getHours();
-  // const minute = new Date().getMinutes();
-  const hours = 7;
-  const minute = 57;
+  const hours = new Date().getHours();
+  const minute = new Date().getMinutes();
+  // const hours = 5;
+  // const minute = 57;
   // Initialize State
   const [showMore, setSowMore] = useState(false);
   const [location, setLocation] = useState("Waiting...");
@@ -153,7 +153,6 @@ export default function HomeScreen() {
                 <View style={styles.wrapUser}>
                   <Pressable
                     onPress={() => {
-                      setOpen(true);
                       handleGetSheculde();
                     }}
                   >

@@ -45,12 +45,11 @@ const NotificationScreen = () => {
                 <View style={styles.wraping}>
                   <View style={styles.indicator} />
                   <Text style={styles.notifTitle}>
-                    Selamat, Rekening SRE Anda telah Diverifikasi.
+                    Selamat, nilai TA I anda telah keluar
                   </Text>
                 </View>
                 <Text style={styles.notifDesc}>
-                  Anda sudah bisa memulai untuk berinvestasi di proyek yang
-                  telah tersedia di aplikasi Ekuid
+                  Anda sudah bisa memeriksa nilai TA I anda
                 </Text>
               </View>
               <View style={styles.line} />
@@ -62,12 +61,11 @@ const NotificationScreen = () => {
                 <View style={styles.wraping}>
                   <View style={styles.indicator} />
                   <Text style={styles.notifTitle}>
-                    Selamat, Rekening SRE Anda telah Diverifikasi.
+                    Selamat, Memulai semester baru.
                   </Text>
                 </View>
                 <Text style={styles.notifDesc}>
-                  Anda sudah bisa memulai untuk berinvestasi di proyek yang
-                  telah tersedia di aplikasi Ekuid
+                  Semangat selalu dalam menuntut ilmu
                 </Text>
               </View>
             </>
